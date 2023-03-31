@@ -1,0 +1,27 @@
+# version of Backstage's API, should always remain the same
+apiVersion: backstage.io/v1alpha1
+# type of catalog entity, typically a Component or API
+kind: Component
+metadata:
+  # unique id for entity
+  # will be displayed in the portal if title is not defined
+  # cannot match another entity's name or they will clash
+  name: zd-salesforce-framework
+  # display name for the entity, will be user facing within the portal
+  title: Zero Depedencies Framework for Salesforce Application Development
+  # description of entity, will be displayed in the portal
+  description: A framework that enables dependency decoupling on the Salesforce platform to enable scratch org development in large, enterprise orgs.
+
+metadata:
+  ...
+  tags:
+    # baseline
+    - software-studio
+    # keywords for the repo
+    - salesforce
+    - sfdx
+
+  spec:
+  type: library
+  lifecycle: production
+  owner: user:Jonathan-Devlin

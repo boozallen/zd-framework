@@ -1,0 +1,46 @@
+# General Project related
+.DS_Store
+target/
+temp/
+/deploy/*
+/debug/
+**/dep-dir.txt
+*.prefs
+build.properties
+.execanon
+
+# MavensMate IDE related
+*mm.log
+*.sublime-build
+*.sublime-project
+*.sublime-settings
+*.sublime-workspace
+.sublime-project
+.tm_properties
+
+# Eclipse IDE Related
+.project
+.settings/
+salesforce.schema
+Referenced Packages/
+
+# VS Code IDE Related
+.vscode/
+.history/
+
+# IntelliJ IDE Related
+.idea/
+*.iml
+*.iws
+IlluminatedCloud/
+.project.license
+
+# SFDX Related
+.sfdx/
+.sf/
+
+# NPM Related
+package.json
+/node_modules
+package-lock.json
+

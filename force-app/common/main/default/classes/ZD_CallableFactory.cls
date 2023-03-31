@@ -1,0 +1,34 @@
+public inherited sharing class ZD_CallableFactory {
+    
+    @TestVisible private static ZD_CallableFactory factory;
+    @TestVisible private Map<String, Callable> callableInstanceMap;
+    @TestVisible private static Boolean allowNullInstances = false;
+    
+    //instantiation only happens via getFactory()
+    @TestVisible private ZD_CallableFactory(){
+        this.callableInstanceMap = new Map<String, Callable>();
+    }
+
+    public static void setFactory(ZD_CallableFactory instance){
+        factory = instance;
+    }
+
+    public static ZD_CallableFactory getFactory(){
+        if(factory == null){
+            factory = new ZD_CallableFactory();
+        }
+        return factory;
+    }
+
+    public Callable getCallableInstance(String className){
+        if(!callableInstanceMap.containsKey(className)){
+            Callable newInstance = (Callable) Type.forName(className)?.newInstance();
+            if(!allowNullInstances && newInstance == null){
+                throw new ZD_Application.ApplicationException('The class ' + className + ' does not exist in the org.');
+            }
+            callableInstanceMap.put(className, newInstance);
+        }
+        return callableInstanceMap.get(className);
+    }
+
+}

@@ -1,0 +1,22 @@
+{
+  "packageDirectories": [
+    {
+      "path": "force-app/untracked",
+      "default": true
+    },
+    {
+      "path": "force-app/common",
+      "package": "zdtest02",
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1.0.NEXT",
+      "versionDescription": ""
+    }
+  ],
+  "namespace": "",
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "55.0",
+  "packageAliases": {
+    "zdtest02": "0Ho8Y000000oLktSAE",
+    "zdtest02@0.1.0.2": "04t8Y0000011evIQAQ"
+  }
+}
