@@ -10,13 +10,23 @@
       "versionName": "ver 0.1",
       "versionNumber": "0.1.0.NEXT",
       "versionDescription": ""
+    },
+    {
+      "path": "force-app/common",
+      "package": "ZD Framework",
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1.1.NEXT",
+      "default": false,
+      "versionDescription": "Initial release of the Zero Depdenencies Framework (ZDF)"
     }
   ],
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
   "sourceApiVersion": "55.0",
   "packageAliases": {
-    "zdtest02": "0Ho8Y000000oLktSAE",
-    "zdtest02@0.1.0.2": "04t8Y0000011evIQAQ"
+    "ZD Framework": "0Ho2E000000PAyGSAW",
+    "ZD Framework@0.1.0-1": "04t2E000002hCZrQAM",
+    "ZD Framework@0.1.0-3": "04t2E000002hCZwQAM",
+    "ZD Framework@0.1.1-1": "04t2E000002hCa1QAE"
   }
 }
