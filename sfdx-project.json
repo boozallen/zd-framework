@@ -6,13 +6,6 @@
     },
     {
       "path": "force-app/common",
-      "package": "zdtest02",
-      "versionName": "ver 0.1",
-      "versionNumber": "0.1.0.NEXT",
-      "versionDescription": ""
-    },
-    {
-      "path": "force-app/common",
       "package": "ZD Framework",
       "versionName": "ver 0.1",
       "versionNumber": "0.1.1.NEXT",
