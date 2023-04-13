@@ -32,8 +32,12 @@ public with sharing class ZD_VirtualCallableTest {
         ZD_Application.stopMocking();
         String result1 = (String) tvc.call('action3');
         String result2 = (String) tvc.call('action3', new Map<String,Object>{});
+        String result3 = (String) tvc.call('AcTioN3');
+        String result4 = (String) tvc.call('AcTioN3', new Map<String,Object>{});
         Assert.areEqual('Mocked Action 3 default', result1, 'Mocked Action 3 default');
         Assert.areEqual('Mocked Action 3 with args', result2, 'Mocked Action 3 with args');
+        Assert.areEqual('Mocked Action 3 default', result3, 'Mocked Action 3 default');
+        Assert.areEqual('Mocked Action 3 with args', result4, 'Mocked Action 3 with args');
     }
     
     @isTest

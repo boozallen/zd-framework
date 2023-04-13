@@ -8,6 +8,7 @@ public inherited sharing virtual class ZD_VirtualCallable extends ZD_Application
     }
 
     public Object call(String action, Map<String,Object> args){
+        action = action.toLowerCase();
         if(this.isSpyingEnabled){
             if(!this.invokedMethodsMap.containsKey(action)){
                 this.invokedMethodsMap.put(action, 0);
@@ -20,7 +21,7 @@ public inherited sharing virtual class ZD_VirtualCallable extends ZD_Application
             }
             return this.getReturnValue(action,args);
         }
-        return doCall(action.toLowerCase(), args);
+        return doCall(action, args);
     }
     
     @TestVisible

@@ -72,6 +72,7 @@ public inherited sharing class ZD_Application {
         }
 
         public String serializeMethodCall(String methodName, Map<String,Object> args) {
+            methodName = methodName?.toLowerCase();
             if(args?.keySet() == null){
                 return methodName;
             }
