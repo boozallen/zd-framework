@@ -1,12 +1,36 @@
+/**
+ * @description implementation of Callable and Mockable that services are built on
+ * This software package is licensed under the Booz Allen Public License. 
+ * Copyright © 2023 Booz Allen Hamilton Inc.  All Rights Reserved.
+ */
 public inherited sharing virtual class ZD_VirtualCallable extends ZD_Application.Mockable implements System.Callable{
     
-    public virtual Object doCall(String action, Map<String,Object> args){return null;}
     @TestVisible protected boolean isSpyingEnabled = Test.isRunningTest();
 
+    /**
+     * @description method to override and do logic in
+     * @param action - method to call
+     * @param args - arguments for metho
+     * @return - null in the virtual class
+     */
+    protected virtual Object doCall(String action, Map<String,Object> args){return null;}
+    
+
+    /**
+     * @description call method with no args
+     * @param action - method name
+     * @return - value from the method called
+     */
     public Object call(String action){
         return this.call(action, null);
     }
 
+    /**
+     * @description method call
+     * @param action - method to call
+     * @param args - arguments for metho
+     * @return - value from the method called
+     */
     public Object call(String action, Map<String,Object> args){
         action = action.toLowerCase();
         if(this.isSpyingEnabled){

@@ -1,4 +1,10 @@
+/**
+ * @description test for the zd transaction class
+ * This software package is licensed under the Booz Allen Public License. 
+ * Portions of this code are Copyright © 2023 FinancialForce.com, Inc. All Rights Reserved.
+ */
 @isTest
+@SuppressWarnings('PMD.CognitiveComplexity, PMD.CyclomaticComplexity, PMD.ApexDoc')
 public without sharing class ZD_TransactionTest {
 
      private static Map<String, Map<Id,ZD_Record>> mockedDatabase = new Map<String,Map<Id,ZD_Record>>{
@@ -12,30 +18,30 @@ public without sharing class ZD_TransactionTest {
      };
        
     @isTest
-    private static void testTransactionFactory_getInstance(){
+    private static void testTransactionFactoryGetInstance(){
         ZD_Transaction zdt = ZD_Transaction.factory.getInstance('unitTest', new List<String>(mockedDatabase.keySet()));
         zdt.registerNew(new Opportunity());
-        ZD_Transaction zdt2 = ZD_Transaction.factory.getInstance('unitTest', new List<String>(mockedDatabase.keySet()));
-        Assert.isTrue(zdt.m_newListByType.get('Opportunity').size() == 1, 'should be same transaction');                                                  	
+        ZD_Transaction.factory.getInstance('unitTest', new List<String>(mockedDatabase.keySet()));
+        Assert.isTrue(zdt.newListByType.get('Opportunity').size() == 1, 'should be same transaction');                                                  	
     }
     
     @isTest
-    private static void testTransactionFactory_getInstance_differentModes(){
+    private static void testTransactionFactoryGetInstanceDifferentModes(){
         ZD_Transaction zdt = ZD_Transaction.factory.getInstance('unitTest', new List<String>(mockedDatabase.keySet()));
         zdt.registerNew(new Opportunity());
         ZD_Transaction zdt2 = ZD_Transaction.factory.getInstance('unitTest', new List<String>(mockedDatabase.keySet()));
-        Assert.isTrue(zdt2.m_newListByType.get('Opportunity').size() == 1, 'should be same transaction');    
+        Assert.isTrue(zdt2.newListByType.get('Opportunity').size() == 1, 'should be same transaction');    
         ZD_Transaction zdt3 = ZD_Transaction.factory.getInstance('unitTest', new List<String>(mockedDatabase.keySet()), System.AccessLevel.SYSTEM_MODE);
-        Assert.isTrue(zdt3.m_newListByType.get('Opportunity').size() == 0, 'should not be same transaction');    
+        Assert.isTrue(zdt3.newListByType.get('Opportunity').size() == 0, 'should not be same transaction');    
     }
     
     @isTest
-    private static void testTransactionFactory_getInstanceExtension(){
+    private static void testTransactionFactoryGetInstanceExtension(){
         ZD_Transaction zdt = ZD_Transaction.factory.getInstance('unitTest', new List<String>(mockedDatabase.keySet()), 'ZD_TransactionTest.DerivedTransaction');
         zdt.registerNew(new Opportunity());
         ZD_Transaction zdt2 = ZD_Transaction.factory.getInstance('unitTest', new List<String>(mockedDatabase.keySet()));
-        Assert.isTrue(zdt instanceof ZD_TransactionTest.DerivedTransaction, 'ZD_TransactionTest.DerivedTransaction');  
-        Assert.isTrue(zdt.m_newListByType.get('Opportunity').size() == 1, 'should be same transaction');                                                  	
+        Assert.isTrue(zdt2 instanceof ZD_TransactionTest.DerivedTransaction, 'ZD_TransactionTest.DerivedTransaction');  
+        Assert.isTrue(zdt2.newListByType.get('Opportunity').size() == 1, 'should be same transaction');                                                  	
     }
                 
     @IsTest
@@ -49,7 +55,7 @@ public without sharing class ZD_TransactionTest {
 
         ZD_Transaction zdt = new ZD_Transaction(new List<String>(mockedDatabase.keySet()));
 
-        zdt.m_emailWork = new Mock_SendEmailWork();
+        zdt.emailWork = new Mock_SendEmailWork();
 
         ZD_Record opp = new ZD_Record('Opportunity');
         opp.put('Name',testRecordName);
@@ -77,13 +83,13 @@ public without sharing class ZD_TransactionTest {
         zdt.commitTransaction();
 
         // assert that mock email functionality was called
-        Assert.isTrue(((Mock_SendEmailWork) zdt.m_emailWork).doWorkWasCalled);
+        Assert.isTrue(((Mock_SendEmailWork) zdt.emailWork).doWorkWasCalled, 'Email doWork should have been called');
 
-        Assert.areEqual(3, mockedDatabase.get('Opportunity').values().size());
+        Assert.areEqual(3, mockedDatabase.get('Opportunity').values().size(), '3 opportunities should have been inserted into the mock db');
     }
     
     @IsTest
-    private static void testRegisterNew_ThrowExceptionOnDirtyRecord(){
+    private static void testRegisterNewThrowExceptionOnDirtyRecord(){
         // GIVEN an existing record
         Opportunity opportunity = new Opportunity(Id = ZD_Application.util.getFakeId('006'));
         ZD_Transaction zdt = new ZD_Transaction(new List<String>(mockedDatabase.keySet()));
@@ -93,7 +99,7 @@ public without sharing class ZD_TransactionTest {
         try
         {
             zdt.registerNew(opportunity);
-            Assert.fail();
+            Assert.fail('This should fail and go to the catch block');
         }
         catch (Exception e)
         {
@@ -106,11 +112,11 @@ public without sharing class ZD_TransactionTest {
         }
 
         // THEN it should have thrown an exception
-        Assert.isTrue(exceptionThrown);
+        Assert.isTrue(exceptionThrown, 'exception should have been thrown');
     }
     
     @IsTest
-    private static void testRegisterDirty_ThrowExceptionOnNewRecord(){
+    private static void testRegisterDirtyThrowExceptionOnNewRecord(){
         // GIVEN an new record
         Opportunity opportunity = new Opportunity();
         ZD_Transaction zdt = new ZD_Transaction(new List<String>(mockedDatabase.keySet()));
@@ -119,7 +125,7 @@ public without sharing class ZD_TransactionTest {
         Boolean exceptionThrown = false;
         try{
             zdt.registerDirty(opportunity);
-            Assert.fail();
+            Assert.fail('should fail and go to catch block');
         }
         catch (Exception e){
             exceptionThrown = true;
@@ -131,7 +137,7 @@ public without sharing class ZD_TransactionTest {
         }
 
         // THEN it should have thrown an exception
-        Assert.isTrue(exceptionThrown);
+        Assert.isTrue(exceptionThrown, 'exception should have been thrown');
     }
     
     @IsTest
@@ -144,8 +150,8 @@ public without sharing class ZD_TransactionTest {
         ZD_Record product = new ZD_Record('Product2');
         ZD_Transaction zdt = new ZD_Transaction(new List<String>(mockedDatabase.keySet()));
         ZD_DatabaseService.doInsert(new List<ZD_Record> { opportunity1, product, new ZD_Record(opportunity2), new ZD_Record(opportunity3) });
-		Assert.areEqual(3, mockedDatabase.get('Opportunity').values().size());
-        Assert.areEqual(1, mockedDatabase.get('Product2').values().size());
+		Assert.areEqual(3, mockedDatabase.get('Opportunity').values().size(), 'Should be 3 opps in the mocked database');
+        Assert.areEqual(1, mockedDatabase.get('Product2').values().size(), 'Should be 1 product in the mocked database');
         // WHEN - we mark the records as deleted
         zdt.registerDeleted(new List<ZD_Record> { opportunity1 });
         zdt.registerDeleted(product);
@@ -154,34 +160,39 @@ public without sharing class ZD_TransactionTest {
         zdt.commitTransaction();
 
         // THEN - the dmlDelete action should be invoked
-        Assert.areEqual(0, mockedDatabase.get('Opportunity').values().size());
-        Assert.areEqual(0, mockedDatabase.get('Product2').values().size());
+        Assert.areEqual(0, mockedDatabase.get('Opportunity').values().size(), 'should now be zero opps in the mocked database');
+        Assert.areEqual(0, mockedDatabase.get('Product2').values().size(), 'should be zero products in the mocked database');
     }
     
     @IsTest
-    private static void testRegisterDeleted_NewRecord(){
+    private static void testRegisterDeletedNewRecord(){
         ZD_Transaction zdt = new ZD_Transaction(new List<String>(mockedDatabase.keySet()));
         try{
             zdt.registerDeleted(new Opportunity());
-            Assert.fail();
+            Assert.fail('should go to catch block');
         }catch(Exception e){
-            Assert.isTrue(e.getMessage().contains('New records cannot be registered for deletion'));
+            Assert.isTrue(e.getMessage().contains('New records cannot be registered for deletion'), 'wrong error caught - should be new record deletion error message');
         }
     }
     
     @IsTest
     private static void testAssertForNonEventSObjectType(){
         ZD_Transaction zdt = new ZD_Transaction(new List<String>(mockedDatabase.keySet()));
-        zdt.assertForNonEventSObjectType('CustomObject__c');
+        try{
+            zdt.assertForNonEventSObjectType('CustomObject__c');
+        }catch(Exception e){
+            Assert.fail('should not throw an exception');
+        }
+        
     }
     
     @IsTest
-    private static void testAssertForNonEventSObjectType_ThrowExceptionOnEventObject (){
+    private static void testAssertForNonEventSObjectTypeThrowExceptionOnEventObject (){
         ZD_Transaction zdt = new ZD_Transaction(new List<String>(mockedDatabase.keySet()));
         Boolean exceptionThrown = false;
         try{
             zdt.assertForNonEventSObjectType('PlatformEventObject__e');
-            Assert.fail();
+            Assert.fail('should go to catch block');
         }
         catch (Exception e){
             exceptionThrown = true;
@@ -190,23 +201,27 @@ public without sharing class ZD_TransactionTest {
                     'Incorrect exception message thrown'
             );
         }
-        Assert.isTrue(exceptionThrown);
+        Assert.isTrue(exceptionThrown, 'exception should have been thrown');
     }
     
     @IsTest
     private static void testAssertForEventSObjectType(){
         ZD_Transaction zdt = new ZD_Transaction(new List<String>(mockedDatabase.keySet()));
-        zdt.assertForEventSObjectType('PlatformEventObject__e');
+        try{
+            zdt.assertForEventSObjectType('PlatformEventObject__e');
+        }catch(Exception e){
+            Assert.fail('should not throw an exception');
+        }
     }
 
     @IsTest
-    private static void testAssertForEventSObjectType_ThrowExceptionOnNonEventObject()
+    private static void testAssertForEventSObjectTypeThrowExceptionOnNonEventObject()
     {
         Boolean exceptionThrown = false;
         ZD_Transaction zdt = new ZD_Transaction(new List<String>(mockedDatabase.keySet()));
         try{
             zdt.assertForEventSObjectType('CustomObject__c');
-            Assert.fail();
+            Assert.fail('should go to catch block');
         }
         catch (Exception e)
         {
@@ -217,16 +232,16 @@ public without sharing class ZD_TransactionTest {
             );
         }
 
-        Assert.isTrue(exceptionThrown);
+        Assert.isTrue(exceptionThrown, 'exception should have been thrown');
     }
     
     @IsTest
-    private static void testAssertForSupportedSObjectType_throwExceptionOnUnsupportedType(){
+    private static void testAssertForSupportedSObjectTypethrowExceptionOnUnsupportedType(){
         Boolean exceptionThrown = false;
         ZD_Transaction zdt = new ZD_Transaction(new List<String>(mockedDatabase.keySet()));
         try{
             zdt.registerNew(new Account());
-            Assert.fail();
+            Assert.fail('should go to catch block');
         }
         catch (Exception e){
             exceptionThrown = true;
@@ -236,11 +251,11 @@ public without sharing class ZD_TransactionTest {
             );
         }
 
-        Assert.isTrue(exceptionThrown);
+        Assert.isTrue(exceptionThrown, 'exception should have been thrown');
     }
     
     @IsTest
-    private static void testDerivedTransaction_CommitSuccess()
+    private static void testDerivedTransactionCommitSuccess()
     {
         ZD_DatabaseService.dbService = new MockDBService();
         // Insert Opportunities with derived transaction
@@ -277,13 +292,13 @@ public without sharing class ZD_TransactionTest {
         Assert.areEqual(15, mockedDatabase.get('PricebookEntry').values().size(), 'Should be 55 PricebookEntry');
         Assert.areEqual(15, mockedDatabase.get('OpportunityLineItem').values().size(), 'Should be 55 OpportunityLineItem');
 
-        Assert.isTrue(dt.m_commitWorkEventsFired.contains('onCommitStart'));
-        Assert.isTrue(dt.m_commitWorkEventsFired.contains('doWork'));
-        Assert.isTrue(dt.m_commitWorkEventsFired.contains('onCommitWorkFinished - true'));
+        Assert.isTrue(dt.commitWorkEventsFired.contains('onCommitStart'), 'onCommitStart should be in the events fired');
+        Assert.isTrue(dt.commitWorkEventsFired.contains('doWork'), 'doWork should be in the events fired');
+        Assert.isTrue(dt.commitWorkEventsFired.contains('onCommitWorkFinished - true'), 'onCommitWorkFinished - true should be in the events fired');
     }
     
     @IsTest
-    private static void testDerivedTransaction_CommitDMLFail(){
+    private static void testDerivedTransactionCommitDMLFail(){
         // Insert Opportunities with derived transaction
         DerivedTransaction dt = new DerivedTransaction(new List<String>(mockedDatabase.keySet()));
         Opportunity opp = new Opportunity();
@@ -302,13 +317,13 @@ public without sharing class ZD_TransactionTest {
         // Assert Results
         System.assertEquals(didFail, true, 'didFail');
         System.assert(caughtEx.getMessage().contains('REQUIRED_FIELD_MISSING'), String.format('Exception message was ', new List<String> { caughtEx.getMessage() }));
-        Assert.isTrue(dt.m_commitWorkEventsFired.contains('onCommitStart'));
-        Assert.isTrue(dt.m_commitWorkEventsFired.contains('onCommitWorkFinished - false'));
+        Assert.isTrue(dt.commitWorkEventsFired.contains('onCommitStart'), 'onCommitStart should be in the events fired');
+        Assert.isTrue(dt.commitWorkEventsFired.contains('onCommitWorkFinished - false'), 'onCommitWorkFinished - false should be in the events fired');
 
     }
     
     @IsTest
-    private static void testRegisterDirty_ExpectReplacement()
+    private static void testRegisterDirtyExpectReplacement()
     {
         ZD_DatabaseService.dbService = new MockDBService();
         final Opportunity insertedOpp = new Opportunity(
@@ -325,12 +340,12 @@ public without sharing class ZD_TransactionTest {
         zdt.registerDirty(opp2);
         zdt.commitTransaction();
 
-        Assert.areEqual(1, mockedDatabase.get('Opportunity').values().size());
-        Assert.areEqual('Expected', mockedDatabase.get('Opportunity').values()[0].get('Name'));
+        Assert.areEqual(1, mockedDatabase.get('Opportunity').values().size(), 'should be one opp in the database');
+        Assert.areEqual('Expected', mockedDatabase.get('Opportunity').values()[0].get('Name'), 'name should be "Expected"');
     }
     
     @IsTest
-    private static void testRegisterDirty_field() {
+    private static void testRegisterDirtyField() {
         ZD_DatabaseService.dbService = new MockDBService();
         Opportunity opp = new Opportunity(
                 Id = ZD_Application.util.getFakeId('006'),
@@ -347,13 +362,13 @@ public without sharing class ZD_TransactionTest {
         zdt.registerDirty(amountUpdate, new List<String> { 'Amount' } );
         zdt.commitTransaction();
 
-        Assert.areEqual(1, mockedDatabase.get('Opportunity').values().size());
-        Assert.areEqual(nameUpdate.get('Name'), mockedDatabase.get('Opportunity').values()[0].get('Name'));
-        Assert.areEqual(amountUpdate.Amount, mockedDatabase.get('Opportunity').values()[0].get('Amount'));
+        Assert.areEqual(1, mockedDatabase.get('Opportunity').values().size(), 'should be 1 opp in the database');
+        Assert.areEqual(nameUpdate.get('Name'), mockedDatabase.get('Opportunity').values()[0].get('Name'), 'name should be updated');
+        Assert.areEqual(amountUpdate.Amount, mockedDatabase.get('Opportunity').values()[0].get('Amount'), 'amount should be updated');
     }
     
     @IsTest
-    private static void testRegisterDirtyRecordsWithDirtyFields_notUpdating(){
+    private static void testRegisterDirtyRecordsWithDirtyFieldsNotUpdating(){
         ZD_DatabaseService.dbService = new MockDBService();
         // GIVEN a list of existing records
         Opportunity opportunityA = new Opportunity(
@@ -393,11 +408,11 @@ public without sharing class ZD_TransactionTest {
         zdt.commitTransaction();
 
         // THEN the records should be registered with both changed values for Amount and StageName
-        Assert.areEqual(2, mockedDatabase.get('Opportunity').values().size());
-        Assert.areEqual('Closed', mockedDatabase.get('Opportunity').values()[0].get('StageName'));
-        Assert.areEqual(250, mockedDatabase.get('Opportunity').values()[0].get('Amount'));
-        Assert.areEqual('Open', mockedDatabase.get('Opportunity').values()[1].get('StageName'));
-        Assert.areEqual(null, mockedDatabase.get('Opportunity').values()[1].get('Amount'));
+        Assert.areEqual(2, mockedDatabase.get('Opportunity').values().size(), 'should be two opps in database');
+        Assert.areEqual('Closed', mockedDatabase.get('Opportunity').values()[0].get('StageName'), '1st opp should be closed');
+        Assert.areEqual(250, mockedDatabase.get('Opportunity').values()[0].get('Amount'), '1st opp should have an amount of 250');
+        Assert.areEqual('Open', mockedDatabase.get('Opportunity').values()[1].get('StageName'), '2nd opp should have as status of open');
+        Assert.areEqual(null, mockedDatabase.get('Opportunity').values()[1].get('Amount'), 'second opp should have a null amount');
     }
     
     @IsTest
@@ -440,11 +455,11 @@ public without sharing class ZD_TransactionTest {
         zdt.commitTransaction();
 
         // THEN the records should be registered with both changed values for Amount and StageName
-        Assert.areEqual(2, mockedDatabase.get('Opportunity').values().size());
-        Assert.areEqual('Closed', mockedDatabase.get('Opportunity').values()[0].get('StageName'));
-        Assert.areEqual(250, mockedDatabase.get('Opportunity').values()[0].get('Amount'));
-        Assert.areEqual('Closed', mockedDatabase.get('Opportunity').values()[1].get('StageName'));
-        Assert.areEqual(250, mockedDatabase.get('Opportunity').values()[1].get('Amount'));
+        Assert.areEqual(2, mockedDatabase.get('Opportunity').values().size(), 'should be 2 opps in the database');
+        Assert.areEqual('Closed', mockedDatabase.get('Opportunity').values()[0].get('StageName'), '1st opp should be closed');
+        Assert.areEqual(250, mockedDatabase.get('Opportunity').values()[0].get('Amount'), '1st opp should have an amount of 250');
+        Assert.areEqual('Closed', mockedDatabase.get('Opportunity').values()[1].get('StageName'), '2nd opp should be closed');
+        Assert.areEqual(250, mockedDatabase.get('Opportunity').values()[1].get('Amount'), '2nd opp should have an amount of 250');
     }
     
     @IsTest
@@ -470,7 +485,7 @@ public without sharing class ZD_TransactionTest {
         zdt.commitTransaction();
         Test.stopTest();
 
-        Assert.areEqual(4, mockedDatabase.get('Opportunity').values().size());
+        Assert.areEqual(4, mockedDatabase.get('Opportunity').values().size(), 'should be 4 opps in the database');
     }
     
     @IsTest
@@ -490,11 +505,11 @@ public without sharing class ZD_TransactionTest {
         zdt.commitTransaction();
         Test.stopTest();
 
-        Assert.areEqual(2, mockedDatabase.get('Before__e').values().size());
+        Assert.areEqual(2, mockedDatabase.get('Before__e').values().size(), 'should be 2 before__e events');
     }
     
     @IsTest
-    private static void testRegisterPublishAfter_Success() {
+    private static void testRegisterPublishAfterSuccess() {
         ZD_DatabaseService.dbService = new MockDBService();
        
         
@@ -516,12 +531,12 @@ public without sharing class ZD_TransactionTest {
         zdt.commitTransaction();
         Test.stopTest();
 
-        Assert.areEqual(2, mockedDatabase.get('AfterSuccess__e').values().size());
-        Assert.areEqual(0, mockedDatabase.get('AfterFailure__e').values().size());
+        Assert.areEqual(2, mockedDatabase.get('AfterSuccess__e').values().size(), 'should be 2 after success events');
+        Assert.areEqual(0, mockedDatabase.get('AfterFailure__e').values().size(), 'should be 0 after failure events');
     }
     
     @IsTest
-    private static void testRegisterPublishAfter_Failure() {
+    private static void testRegisterPublishAfterFailure() {
         ZD_DatabaseService.dbService = new MockDBService();
        
         
@@ -543,21 +558,21 @@ public without sharing class ZD_TransactionTest {
         zdt.registerWork(new ErrorThrower());
         try{
             zdt.commitTransaction();
-            Assert.fail();
+            Assert.fail('should go to catch block');
         }catch(Exception e){
-            Assert.isTrue(e.getMessage().contains('Always fail'));
+            Assert.isTrue(e.getMessage().contains('Always fail'), 'wrong error message');
         }
         
         Test.stopTest();
 
-        Assert.areEqual(0, mockedDatabase.get('AfterSuccess__e').values().size());
-        Assert.areEqual(2, mockedDatabase.get('AfterFailure__e').values().size());
+        Assert.areEqual(0, mockedDatabase.get('AfterSuccess__e').values().size(), 'should be 0 after success events');
+        Assert.areEqual(2, mockedDatabase.get('AfterFailure__e').values().size(), 'should be 2 after failure events');
     }
     
     //cant actually assert on the publish because no standard platform event exists. if it ever does
     //then update this test to assert on the event
     @IsTest
-    private static void testRegisterPublish_SObject() {
+    private static void testRegisterPublishSObject() {
         ZD_DatabaseService.dbService = new MockDBService();
        
         Opportunity opp1 = new Opportunity(Id = ZD_Application.util.getFakeId('006'));
@@ -576,45 +591,45 @@ public without sharing class ZD_TransactionTest {
         ZD_Transaction zdt = new ZD_Transaction(new List<String>(mockedDatabase.keySet()));
         try{
             zdt.registerPublishAfterSuccessTransaction(new List<SObject>{opp1});
-            Assert.fail();
+            Assert.fail('should go to catch black');
         }catch(Exception e){
-            Assert.isTrue(e.getMessage().contains('is invalid for publishing within this transaction'));
+            Assert.isTrue(e.getMessage().contains('is invalid for publishing within this transaction'), 'wrong error message');
         }
         try{
             zdt.registerPublishAfterSuccessTransaction(opp2);
-            Assert.fail();
+            Assert.fail('should go to catch black');
         }catch(Exception e){
-            Assert.isTrue(e.getMessage().contains('is invalid for publishing within this transaction'));
+            Assert.isTrue(e.getMessage().contains('is invalid for publishing within this transaction'), 'wrong error message');
         }
         try{
             zdt.registerPublishAfterFailureTransaction(new List<SObject>{opp1});
-            Assert.fail();
+            Assert.fail('should go to catch black');
         }catch(Exception e){
-            Assert.isTrue(e.getMessage().contains('is invalid for publishing within this transaction'));
+            Assert.isTrue(e.getMessage().contains('is invalid for publishing within this transaction'), 'wrong error message');
         }
         try{
             zdt.registerPublishAfterFailureTransaction(opp2);
-            Assert.fail();
+            Assert.fail('should go to catch black');
         }catch(Exception e){
-            Assert.isTrue(e.getMessage().contains('is invalid for publishing within this transaction'));
+            Assert.isTrue(e.getMessage().contains('is invalid for publishing within this transaction'), 'wrong error message');
         }
         try{
             zdt.registerPublishBeforeTransaction(new List<SObject>{opp1});
-            Assert.fail();
+            Assert.fail('should go to catch black');
         }catch(Exception e){
-            Assert.isTrue(e.getMessage().contains('is invalid for publishing within this transaction'));
+            Assert.isTrue(e.getMessage().contains('is invalid for publishing within this transaction'), 'wrong error message');
         }
         try{
             zdt.registerPublishBeforeTransaction(opp2);
-            Assert.fail();
+            Assert.fail('should go to catch black');
         }catch(Exception e){
-            Assert.isTrue(e.getMessage().contains('is invalid for publishing within this transaction'));
+            Assert.isTrue(e.getMessage().contains('is invalid for publishing within this transaction'), 'wrong error message');
         }
         
         Test.stopTest();
-		Assert.areEqual(0, mockedDatabase.get('Before__e').values().size());
-        Assert.areEqual(0, mockedDatabase.get('AfterSuccess__e').values().size());
-        Assert.areEqual(0, mockedDatabase.get('AfterFailure__e').values().size());
+		Assert.areEqual(0, mockedDatabase.get('Before__e').values().size(), 'should be zero before events');
+        Assert.areEqual(0, mockedDatabase.get('AfterSuccess__e').values().size(), 'should be zero after success events');
+        Assert.areEqual(0, mockedDatabase.get('AfterFailure__e').values().size(), 'should be zero after failure events');
     }
     
     class ErrorThrower implements ZD_Transaction.IDoWork{
@@ -625,18 +640,19 @@ public without sharing class ZD_TransactionTest {
     
     public class DerivedTransaction extends ZD_Transaction implements ZD_Transaction.IDoWork
     {
-        @TestVisible private List<String> m_commitWorkEventsFired = new List<String>();
-        @TestVisible private Set<String> m_registeredTypes = new Set<String>();
+        @TestVisible private List<String> commitWorkEventsFired = new List<String>();
+        @TestVisible private Set<String> registeredTypes = new Set<String>();
         
         public DerivedTransaction(){
+            super();
         }
         
         public List<String> getCommitWorkEventsFired(){
-            return m_commitWorkEventsFired.clone();
+            return commitWorkEventsFired.clone();
         }
 
         public Set<String> getRegisteredTypes(){
-            return m_registeredTypes.clone();
+            return registeredTypes.clone();
         }
 
         public DerivedTransaction(List<String> sObjectTypes){
@@ -648,13 +664,13 @@ public without sharing class ZD_TransactionTest {
         {
             // events should only be fired one time
             // ensure that this event has not been fired already
-            for (String eventName :m_commitWorkEventsFired)
+            for (String eventName :commitWorkEventsFired)
             {
                 if (event == eventName){
                     throw new DerivedTransactionException(String.format('Event {0} has already been fired.', new List<String> { event }));
                 }
             }
-            m_commitWorkEventsFired.add(event);
+            commitWorkEventsFired.add(event);
         }
 
 
@@ -676,17 +692,14 @@ public without sharing class ZD_TransactionTest {
     public class DerivedTransactionException extends Exception {}
     
     private class Mock_SendEmailWork extends ZD_Transaction.SendEmailWork{
+        private Boolean doWorkWasCalled = false;
         public override void doWork(){
             doWorkWasCalled = true;
-            // The code in the fflib_SObjectUnitOfWork class
-            // causes unit test failures in Orgs that do not
-            // have email enabled.
         }
-        private Boolean doWorkWasCalled = false;
     }
     
     private class MockDBService extends ZD_VirtualCallable{
-        public override Object doCall(String action, Map<String,Object> args){
+        protected override Object doCall(String action, Map<String,Object> args){
             switch on action {
                 when 'insert' {
                     List<ZD_Record> records = (List<ZD_Record>)args.get('records');
@@ -703,10 +716,6 @@ public without sharing class ZD_TransactionTest {
                         }
                         mockedDatabase.get(record.getObjectAPIName()).put(record.Id, record);
                     }
-                }
-                when 'upsert' {
-                    List<ZD_Record> records = (List<ZD_Record>)args.get('records');
-                    //return Database.upsert(records, this.accessLevel);
                 }
                 when 'delete' {
                     List<ZD_Record> records = (List<ZD_Record>)args.get('records');

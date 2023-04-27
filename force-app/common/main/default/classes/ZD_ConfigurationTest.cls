@@ -1,3 +1,8 @@
+/**
+ * @description test class for ZD configuration
+ * This software package is licensed under the Booz Allen Public License. 
+ * Copyright © 2023 Booz Allen Hamilton Inc.  All Rights Reserved.
+ */
 @isTest
 public without sharing class ZD_ConfigurationTest {
     
@@ -78,9 +83,9 @@ public without sharing class ZD_ConfigurationTest {
         ZD_Configuration zdc = new ZD_Configuration();
         try{
             zdc.get('ZD_ConfigurationTest_testApp2', 'key3');
-            Assert.fail();
+            Assert.fail('get method should fail');
         }catch(ZD_Configuration.ZD_ConfigurationException e){
-            Assert.isTrue(e.getMessage().contains('ZD_ConfigurationTest_testApp2 config has not been loaded'));
+            Assert.isTrue(e.getMessage().contains('ZD_ConfigurationTest_testApp2 config has not been loaded'), 'Wrong error message');
         }
         zdc.loadConfig('ZD_ConfigurationTest_testApp2');
         Assert.areEqual(zdc.get('ZD_ConfigurationTest_testApp2', 'key3'), 'value3', 'key3 should have value3 in the cache');
@@ -93,9 +98,9 @@ public without sharing class ZD_ConfigurationTest {
         ZD_Configuration zdc = new ZD_Configuration();
         try{
             zdc.get('key3');
-            Assert.fail();
+            Assert.fail('get call should fail');
         }catch(ZD_Configuration.ZD_ConfigurationException e){
-            Assert.isTrue(e.getMessage().contains('No default app set, please provide an application name'));
+            Assert.isTrue(e.getMessage().contains('No default app set, please provide an application name'), 'Wrong error message');
         }
         Test.stopTest();
     }
@@ -106,9 +111,9 @@ public without sharing class ZD_ConfigurationTest {
         ZD_Configuration zdc = new ZD_Configuration();
         try{
             zdc.keySet();
-            Assert.fail();
+            Assert.fail('key set call should fail');
         }catch(ZD_Configuration.ZD_ConfigurationException e){
-            Assert.isTrue(e.getMessage().contains('No default app set, please provide an application name'));
+            Assert.isTrue(e.getMessage().contains('No default app set, please provide an application name'), 'wrong error message');
         }
         Test.stopTest();
     }
@@ -138,10 +143,10 @@ public without sharing class ZD_ConfigurationTest {
         Test.startTest();
         ZD_Configuration zdc = new ZD_Configuration();
         try{
-            Set<String> keySet = zdc.keySet('ZD_ConfigurationTest_testApp1');
-            Assert.fail();
+            zdc.keySet('ZD_ConfigurationTest_testApp1');
+            Assert.fail('key set call should fail');
         }catch(ZD_Configuration.ZD_ConfigurationException e){
-            Assert.isTrue(e.getMessage().contains('Application: ZD_ConfigurationTest_testApp1 config has not been loaded'));
+            Assert.isTrue(e.getMessage().contains('Application: ZD_ConfigurationTest_testApp1 config has not been loaded'), 'wrong error message');
         }
         Test.stopTest();
     }

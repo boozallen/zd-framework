@@ -1,3 +1,8 @@
+/**
+ * @description test for callable factory
+ * This software package is licensed under the Booz Allen Public License. 
+ * Copyright © 2023 Booz Allen Hamilton Inc.  All Rights Reserved. 
+ */
 @isTest
 public without sharing class ZD_CallableFactoryTest {
     
@@ -24,17 +29,17 @@ public without sharing class ZD_CallableFactoryTest {
     }
     
     @isTest
-    public static void testGetCallableInstance_nullClass(){
+    public static void testGetCallableInstanceWithnullClass(){
         try{
-            Callable c = ZD_CallableFactory.getFactory().getCallableInstance('!!BADCLASSNAME!!');
-            Assert.fail();
+            ZD_CallableFactory.getFactory().getCallableInstance('!!BADCLASSNAME!!');
+            Assert.fail('Should get an error when the class does not exist in the org');
         }catch(ZD_Application.ApplicationException ex){
             Assert.isTrue(ex.getMessage().contains('The class !!BADCLASSNAME!! does not exist in the org.'), 'error message should be The class !!BADCLASSNAME!! does not exist in the org.');
         }
     }
     
     @isTest
-    public static void testGetCallableInstance_nullClass_allowNulls(){
+    public static void testGetCallableInstanceWithNullClassWithAllowNulls(){
         ZD_CallableFactory.allowNullInstances = true;
         Callable c = ZD_CallableFactory.getFactory().getCallableInstance('!!BADCLASSNAME!!');
         Assert.isNull(c, 'factory should return null');

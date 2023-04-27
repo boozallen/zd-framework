@@ -1,3 +1,8 @@
+/**
+ * @description Test for the database service class
+ * This software package is licensed under the Booz Allen Public License. 
+ * Copyright © 2023 Booz Allen Hamilton Inc.  All Rights Reserved.
+ */
 @isTest
 public without sharing class ZD_DatabaseServiceTest {
     
@@ -23,7 +28,7 @@ public without sharing class ZD_DatabaseServiceTest {
     }
     
     @isTest
-    public static void testInsert_withZDRecord(){
+    public static void testInsertWithZDRecord(){
         List<Group> gList = [SELECT Id FROM Group WHERE Name='ZD_DatabaseService Group'];
         Assert.areEqual(0, gList.size(), 'should be no groups');
         
@@ -54,7 +59,7 @@ public without sharing class ZD_DatabaseServiceTest {
     }
     
     @isTest
-    public static void testUpdate_withZDRecord(){
+    public static void testUpdateWithZDRecord(){
         List<Group> gList = [SELECT Id FROM Group WHERE Name='ZD_DatabaseService Group'];
         Assert.areEqual(0, gList.size(), 'should be no groups');
         
@@ -89,7 +94,7 @@ public without sharing class ZD_DatabaseServiceTest {
     }
     
     @isTest
-    public static void testUpsert_withZDRecords(){
+    public static void testUpsertWithZDRecords(){
         List<Group> gList = [SELECT Id FROM Group WHERE Name='ZD_DatabaseService Group'];
         Assert.areEqual(0, gList.size(), 'should be no groups');
         
@@ -124,7 +129,7 @@ public without sharing class ZD_DatabaseServiceTest {
     }
     
     @isTest
-    public static void testDelete_withZDRecord(){
+    public static void testDeleteWithZDRecord(){
         List<Group> gList = [SELECT Id FROM Group WHERE Name='ZD_DatabaseService Group'];
         Assert.areEqual(0, gList.size(), 'should be no groups');
         Group g = new Group(Name='ZD_DatabaseService Group');
@@ -156,20 +161,23 @@ public without sharing class ZD_DatabaseServiceTest {
     }
     
     @isTest
-    public static void testEventPublish(){        
+    public static void testEventPublishSObject(){
+        BatchApexErrorEvent evt = new BatchApexErrorEvent();        
         Test.startTest();
-        try{
-            ZD_DatabaseService.eventPublish(new List<SObject>{new Group()});
-        }catch(Exception e){
-        	//do nothing   
-        }
-        try{
-            ZD_DatabaseService.eventPublish(new List<ZD_Record>{new ZD_Record(new Group())});
-        }catch(Exception e){
-        	//do nothing   
-        }
+        Database.SaveResult[] publishResult = ZD_DatabaseService.eventPublish(new List<SObject>{evt});
         Test.stopTest();
-        //no real way to assert here because there are no standard platform events
+        Assert.areEqual(publishResult.size(), 1, 'Should be one save result');
+        Assert.isTrue(publishResult[0].isSuccess(), 'Should be successful');
+    }
+
+    @isTest
+    public static void testEventPublishZDRecord(){
+        BatchApexErrorEvent evt = new BatchApexErrorEvent();        
+        Test.startTest();
+        Database.SaveResult[] publishResult = ZD_DatabaseService.eventPublish(new List<ZD_Record>{new ZD_Record(evt)});
+        Test.stopTest();
+        Assert.areEqual(publishResult.size(), 1, 'Should be one save result');
+        Assert.isTrue(publishResult[0].isSuccess(), 'Should be successful');
     }
     
     @isTest
@@ -192,7 +200,6 @@ public without sharing class ZD_DatabaseServiceTest {
     
     @isTest
     public static void testQueryWithAccessLevel(){
-        String gName = 'ZD_DatabaseService Group';
         List<Group> gList = [SELECT Id FROM Group WHERE Name='ZD_DatabaseService Group'];
         Assert.areEqual(0, gList.size(), 'should be no groups');
         Group g = new Group(Name='ZD_DatabaseService Group');
@@ -209,7 +216,6 @@ public without sharing class ZD_DatabaseServiceTest {
     
     @isTest
     public static void testQueryWithNullAccessLevel(){
-        String gName = 'ZD_DatabaseService Group';
         List<Group> gList = [SELECT Id FROM Group WHERE Name='ZD_DatabaseService Group'];
         Assert.areEqual(0, gList.size(), 'should be no groups');
         Group g = new Group(Name='ZD_DatabaseService Group');
@@ -226,7 +232,6 @@ public without sharing class ZD_DatabaseServiceTest {
     
     @isTest
     public static void testQueryAsZDRecords(){
-        String gName = 'ZD_DatabaseService Group';
         List<Group> gList = [SELECT Id FROM Group WHERE Name='ZD_DatabaseService Group'];
         Assert.areEqual(0, gList.size(), 'should be no groups');
         Group g = new Group(Name='ZD_DatabaseService Group');
@@ -256,10 +261,10 @@ public without sharing class ZD_DatabaseServiceTest {
         List<ZD_Record> zdRecordListQuery2 = ZD_DatabaseService.queryAsZDRecords('queryTwo');
         Test.stopTest();
         Assert.areEqual(1, sObjListQuery1.size(), 'Should be 1 group');
-        Assert.areEqual(sObjListQuery1[0].get('Name'), 'ZD_DatabaseService Group1');
+        Assert.areEqual(sObjListQuery1[0].get('Name'), 'ZD_DatabaseService Group1', 'Should be ZD_DatabaseService Group1');
         Assert.areEqual(1, sObjListQuery2.size(), 'Should be 1 group');
-        Assert.areEqual(sObjListQuery2[0].get('Name'), 'ZD_DatabaseService Group2');
+        Assert.areEqual(sObjListQuery2[0].get('Name'), 'ZD_DatabaseService Group2', 'Should be ZD_DatabaseService Group2');
         Assert.areEqual(1, zdRecordListQuery2.size(), 'Should be 1 group');
-        Assert.areEqual(zdRecordListQuery2[0].get('Name'), 'ZD_DatabaseService Group2');
+        Assert.areEqual(zdRecordListQuery2[0].get('Name'), 'ZD_DatabaseService Group2', 'Should be ZD_DatabaseService Group2');
     }
 }

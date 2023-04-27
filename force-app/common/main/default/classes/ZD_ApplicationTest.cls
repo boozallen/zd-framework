@@ -1,3 +1,8 @@
+/**
+ * @description test for ZD_Application
+ * This software package is licensed under the Booz Allen Public License. 
+ * Copyright © 2023 Booz Allen Hamilton Inc.  All Rights Reserved. 
+ */
 @isTest
 public without sharing class ZD_ApplicationTest {
     
@@ -8,7 +13,7 @@ public without sharing class ZD_ApplicationTest {
         ZD_Application.startMocking();
         try{
             ZD_Application.startMocking();
-            Assert.fail();
+            Assert.fail('Should not successfully call startMocking');
         }catch(ZD_Application.ApplicationException ex){
             Assert.isTrue(ex.getMessage().contains('Start mocking can only be called once'), 'unexpected error message');
         }
@@ -20,7 +25,7 @@ public without sharing class ZD_ApplicationTest {
         
         try{
             ZD_Application.stopMocking();
-            Assert.fail();
+            Assert.fail('Should not successfullt call stop mocking here');
         }catch(ZD_Application.ApplicationException ex){
             Assert.isTrue(ex.getMessage().contains('stopMocking must be called after startMocking'), 'unexpected error message');
         }
@@ -34,14 +39,14 @@ public without sharing class ZD_ApplicationTest {
         TestMockable t = new TestMockable();
         try{
             t.setReturnValue('test', null);
-            Assert.fail();
+            Assert.fail('should not be able to call set return value here');
         }catch(ZD_Application.ApplicationException e){
-            Assert.isTrue(e.getMessage().contains('This instance is not currently configured to mock, wrap this call in the startMocking and stopMocking methods'));
+            Assert.isTrue(e.getMessage().contains('This instance is not currently configured to mock, wrap this call in the startMocking and stopMocking methods'), 'Message is wrong exception');
         }
     }
     
     @isTest
-    public static void testSetReturnValueInsideMock_NullArgs(){
+    public static void testSetReturnValueInsideMockWithNullArgs(){
         TestMockable t = new TestMockable();
         ZD_Application.startMocking();
         t.setReturnValue('test', null);
@@ -50,7 +55,7 @@ public without sharing class ZD_ApplicationTest {
     }
     
     @isTest
-    public static void testSetReturnValue_NonNullArgs(){
+    public static void testSetReturnValueWithNonNullArgs(){
         TestMockable t = new TestMockable();
         ZD_Application.startMocking();
         t.setReturnValue('test', new Map<String,Object>{'param1' => 'value1'}, 'hello world!');
@@ -61,30 +66,30 @@ public without sharing class ZD_ApplicationTest {
     
     @isTest
     public static void testUtilMethods(){
-       	Assert.areEqual('0To000000000000001' , ZD_Application.util.getFakeId('0To'));
-		Assert.areEqual('0T2000000000000002' , ZD_Application.util.getFakeId('0T2'));
-        Assert.areEqual('0T2000000000000003' , ZD_Application.util.getFakeId('0T2'));
+       	Assert.areEqual('0To000000000000001' , ZD_Application.util.getFakeId('0To'), 'should be the first record');
+		Assert.areEqual('0T2000000000000002' , ZD_Application.util.getFakeId('0T2'), 'should be the second record');
+        Assert.areEqual('0T2000000000000003' , ZD_Application.util.getFakeId('0T2'), 'should be the third record');
     }
     
     @isTest
-    public static void testStubInvocable_isNotRunningTest(){
+    public static void testStubInvocableWhenisNotRunningTest(){
         ZD_Application.isRunningTest = false;
-        Assert.areEqual(0, invocableCallCount);
+        Assert.areEqual(0, invocableCallCount, 'invocable call count should be zero');
         try{
             new ZD_Application.StubInvocable().call('test', null);
         }catch(ZD_Application.ApplicationException e){
-            Assert.isTrue(e.getMessage().contains('StubInvocable class can only be called in Test context'));
+            Assert.isTrue(e.getMessage().contains('StubInvocable class can only be called in Test context'), 'Wrong error message');
         }
-        Assert.areEqual(0, invocableCallCount);
+        Assert.areEqual(0, invocableCallCount, 'invocable call count should still be zero');
     }
     
     @isTest
-    public static void testStubInvocable_isRunningTest(){
-        Assert.areEqual(0, invocableCallCount);
+    public static void testStubInvocableWhenisRunningTest(){
+        Assert.areEqual(0, invocableCallCount, 'invocable call count should be zero');
        	new TestInvocable().call('test', null);
-        Assert.areEqual(1, invocableCallCount);
+        Assert.areEqual(1, invocableCallCount, 'invocable call count should be 1');
         new ZD_Application.StubInvocable().call('test', null);
-        Assert.areEqual(1, invocableCallCount);
+        Assert.areEqual(1, invocableCallCount, 'invocable call count should be 1');
     }
 
     class TestInvocable extends ZD_Application.StubInvocable{
