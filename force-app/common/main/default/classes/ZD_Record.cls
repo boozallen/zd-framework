@@ -8,7 +8,7 @@ public with sharing class ZD_Record {
     
     @TestVisible private Map<String,Object> fields;
     @TestVisible private SObject sObj;
-    @TestVisible private static boolean allowNullSObjects = Test.isRunningTest();
+    @TestVisible private static Boolean allowNullSObjects = Test.isRunningTest();
     private String objectAPIName;
 
      /**
@@ -137,8 +137,10 @@ public with sharing class ZD_Record {
      */
     public static List<SObject> toSObjects(List<ZD_Record> recordsList){
         List<SObject> sObjs = new List<SObject>();
-        for(ZD_Record rec : recordsList){
-            sObjs.add(rec.sObject());
+        if(recordsList != null){
+            for(ZD_Record rec : recordsList){
+                sObjs.add(rec.sObject());
+            }
         }
         return sObjs;
     }
@@ -150,8 +152,10 @@ public with sharing class ZD_Record {
      */
     public static List<ZD_Record> toRecords(List<SObject> sObjs){
         List<ZD_Record> records = new List<ZD_Record>();
-        for(SObject sObj : sObjs){
-            records.add(new ZD_Record(sObj));
+        if(sObjs != null){
+            for(SObject sObj : sObjs){
+                records.add(new ZD_Record(sObj));
+            }
         }
         return records;
     }
@@ -163,8 +167,10 @@ public with sharing class ZD_Record {
      */
     public static Map<Id, ZD_Record> toRecordsMap(List<SObject> sObjs){
         Map<Id, ZD_Record> records = new Map<Id, ZD_Record>();
-        for(SObject sObj : sObjs){
-            records.put(sObj.Id, new ZD_Record(sObj));
+        if(sObjs != null){
+            for(SObject sObj : sObjs){
+                records.put(sObj.Id, new ZD_Record(sObj));
+            }
         }
         return records;
     }
@@ -176,8 +182,10 @@ public with sharing class ZD_Record {
      */
     public static Map<Id, ZD_Record> toRecordsMap(List<ZD_Record> records){
         Map<Id, ZD_Record> recordsMap = new Map<Id, ZD_Record>();
-        for(ZD_Record record : records){
-            recordsMap.put(record.Id, record);
+        if(records != null){
+            for(ZD_Record record : records){
+                recordsMap.put(record.Id, record);
+            }
         }
         return recordsMap;
     }
