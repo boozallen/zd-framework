@@ -1,15 +1,15 @@
-# basebah-poc
+# Zero Dependency Framework
+
+[Production/Developer Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHu000002hCewIAE)
+[Sandbox Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHu000002hCewIAE)
 
 ## Commands
 ```
-sfdx force:org:create -f config/project-scratch-def.json -a <YOUR ALIAS NAME>
+sf org create scratch -f config/project-scratch-def.json -a <YOUR ALIAS NAME>
 ```
 ```
-sfdx force:source:deploy -p "force-app/common/" -u <YOUR ALIAS NAME>
+sf project start deploy -d force-app -o <YOUR ALIAS NAME>
 ```
 ```
-sfdx force:source:deploy -p "force-app/demo-app/main/default/classes/services" -u <YOUR ALIAS NAME>
-```
-```
-sfdx force:apex:test:run --classnames "SampleServiceTest" --resultformat human -u <YOUR ALIAS NAME>
+sf run apex test --test-level "RunLocalTests" --result-format human --code-coverage -w 2 -o <YOUR ALIAS NAME>
 ```

@@ -2,6 +2,8 @@
  * @description class for handling configuration (key/value pairs)
  * This software package is licensed under the Booz Allen Public License. 
  * Copyright © 2023 Booz Allen Hamilton Inc.  All Rights Reserved.
+ * 
+ * @author Jonathan Devlin
  */
 public without sharing class ZD_Configuration {
     

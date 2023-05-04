@@ -2,6 +2,8 @@
  * @description transaction management class
  * This software package is licensed under the Booz Allen Public License. 
  * Portions of this code are Copyright © 2023 FinancialForce.com, Inc. All Rights Reserved.
+ * 
+ * @author Jonathan Devlin
  */
 @SuppressWarnings('PMD.CognitiveComplexity, PMD.CyclomaticComplexity, PMD.ExcessivePublicCount, PMD.ExcessiveParameterList, PMD.EmptyStatementBlock')
 public inherited sharing virtual class ZD_Transaction {

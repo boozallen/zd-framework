@@ -2,6 +2,8 @@
  * @description class for Application Mocking
  * This software package is licensed under the Booz Allen Public License. 
  * Copyright © 2023 Booz Allen Hamilton Inc.  All Rights Reserved.
+ * 
+ * @author Jonathan Devlin
  */
 public inherited sharing class ZD_Application {
     

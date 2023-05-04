@@ -2,6 +2,8 @@
  * @description test for the zd transaction class
  * This software package is licensed under the Booz Allen Public License. 
  * Portions of this code are Copyright © 2023 FinancialForce.com, Inc. All Rights Reserved.
+ * 
+ * @author Jonathan Devlin
  */
 @isTest
 @SuppressWarnings('PMD.CognitiveComplexity, PMD.CyclomaticComplexity, PMD.ApexDoc')
