@@ -1,7 +1,7 @@
 # Zero Dependency Framework
 
-[Production/Developer Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHu000002hCewIAE)
-[Sandbox Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHu000002hCewIAE)
+[Production/Developer Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHu000002hCg4IAE)
+[Sandbox Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHu000002hCg4IAE)
 
 ## Commands
 ```

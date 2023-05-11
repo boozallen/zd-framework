@@ -44,6 +44,8 @@ public inherited sharing virtual class ZD_VirtualCallable extends ZD_Application
         if(this.containsReturnValue(action,args)){
             if(this.getReturnValue(action,args) instanceof ZD_Application.StubInvocable){
                 return ((Callable) this.getReturnValue(action,args)).call(action,args);
+            }else if (this.getReturnValue(action,args) instanceof Exception){
+                throw (Exception) this.getReturnValue(action,args);
             }
             return this.getReturnValue(action,args);
         }

@@ -46,6 +46,31 @@ public with sharing class ZD_VirtualCallableTest {
         Assert.areEqual('Mocked Action 3 default', result3, 'Mocked Action 3 default');
         Assert.areEqual('Mocked Action 3 with args', result4, 'Mocked Action 3 with args');
     }
+
+    @isTest
+    public static void testDoCallWithImplMockedArgsWithThenSyntax(){
+        ZD_VirtualCallable tvc = new TestVirtualCallable();
+        ZD_Application.startMocking();
+        tvc.when('action3').thenReturn('Mocked Action 3 default');
+        tvc.when('action3').with(new Map<String,Object>{}).thenReturn('Mocked Action 3 with args');
+        Map<String,Object> args1 = new Map<String,Object>{'key1' => 'val1'};
+        tvc.when('action3').with(args1).thenReturn('Mocked Action 3 with args1');
+        Map<String,Object> args2 = new Map<String,Object>{'key2' => 'val2'};
+        tvc.when('action3').with(args2).thenReturn('Mocked Action 3 with args2');
+        ZD_Application.stopMocking();
+        String result1 = (String) tvc.call('action3');
+        String result2 = (String) tvc.call('action3', new Map<String,Object>{});
+        String result3 = (String) tvc.call('AcTioN3');
+        String result4 = (String) tvc.call('AcTioN3', new Map<String,Object>{});
+        String result5 = (String) tvc.call('AcTioN3', args1);
+        String result6 = (String) tvc.call('AcTioN3', args2);
+        Assert.areEqual('Mocked Action 3 default', result1, 'Mocked Action 3 default');
+        Assert.areEqual('Mocked Action 3 with args', result2, 'Mocked Action 3 with args');
+        Assert.areEqual('Mocked Action 3 default', result3, 'Mocked Action 3 default');
+        Assert.areEqual('Mocked Action 3 with args', result4, 'Mocked Action 3 with args');
+        Assert.areEqual('Mocked Action 3 with args1', result5, 'Mocked Action 3 with args1');
+        Assert.areEqual('Mocked Action 3 with args2', result6, 'Mocked Action 3 with args2');
+    }
     
     @isTest
     public static void testDoCallWithImplMockedReturnValueDefaultTest(){
@@ -82,6 +107,48 @@ public with sharing class ZD_VirtualCallableTest {
         Assert.areEqual('action 3 called', result, 'action 3 called returned');
     }
 
+    @isTest
+    public static void testDoCallWithImplMockedReturnValueStubInvocableWithWhenThenSyntax(){
+        ZD_VirtualCallable tvc = new TestVirtualCallable();
+        ZD_Application.startMocking();
+        tvc.when('action1').thenExecute(new TestInvocable());
+        ZD_Application.stopMocking();
+        tvc.call('action1', null);
+        Assert.areEqual(testOutput, 'Called action1 from TestInvocable', 'action1 was not called');
+        tvc.call('action2');
+        Assert.areEqual(testOutput, 'Called action2 from TestVirtualCallable', 'action2 was not called');
+        String result = (String) tvc.call('action3');
+        Assert.areEqual('action 3 called', result, 'action 3 called returned');
+    }
+
+    @isTest
+    public static void testDoCallWithException(){
+        ZD_VirtualCallable tvc = new TestVirtualCallable();
+        ZD_Application.startMocking();
+        tvc.setReturnValue('action1', new TestException('test exception'));
+        ZD_Application.stopMocking();
+        try{
+            tvc.call('action1', null);
+            Assert.fail('should go to catch block');
+        }catch(Exception e){
+            Assert.isTrue(e.getMessage().contains('test exception'), 'wrong error caught');
+        }
+    }
+
+    @isTest
+    public static void testDoCallWithExceptionWithThen(){
+        ZD_VirtualCallable tvc = new TestVirtualCallable();
+        ZD_Application.startMocking();
+        tvc.when('action1').thenThrowException(new TestException('test exception'));
+        ZD_Application.stopMocking();
+        try{
+            tvc.call('action1', null);
+            Assert.fail('should go to catch block');
+        }catch(Exception e){
+            Assert.isTrue(e.getMessage().contains('test exception'), 'wrong error caught');
+        }
+    }
+
     private class TestVirtualCallable extends ZD_VirtualCallable{
         public override Object doCall(String action, Map<String,Object> args){
             switch on action {
@@ -102,4 +169,6 @@ public with sharing class ZD_VirtualCallableTest {
             testOutput = 'Called ' + action + ' from TestInvocable';
         }
     }
+
+    private class TestException extends Exception{}
 }

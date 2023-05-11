@@ -54,6 +54,61 @@ public inherited sharing class ZD_Application {
         
         protected boolean isMocked = false;
 
+        @TestVisible private String methodToMock;
+        @TestVisible private Map<String,Object> argsForMethodToMock;
+
+        @TestVisible
+        protected Mockable when(String methodToMock){
+            if(isSettingMockValues != true){
+                throw new ApplicationException('This instance is not currently configured to mock, wrap this call in the startMocking and stopMocking methods');
+            }
+            this.methodToMock = methodToMock;
+            this.argsForMethodToMock = null;
+            return this;
+        }
+
+        @TestVisible
+        protected Mockable with(Map<String,Object> argsForMethodToMock){
+            if(isSettingMockValues != true){
+                throw new ApplicationException('This instance is not currently configured to mock, wrap this call in the startMocking and stopMocking methods');
+            }
+            if(this.methodToMock == null){
+                throw new ApplicationException('cannot mock a null method');
+            }
+            this.argsForMethodToMock = argsForMethodToMock;
+            return this;
+        }
+
+        @TestVisible
+        protected void thenReturn(Object returnValue){
+            if(this.methodToMock == null){
+                throw new ApplicationException('cannot mock a null method');
+            }
+            this.setReturnValue(this.methodToMock, this.argsForMethodToMock, returnValue);
+            this.methodToMock = null;
+            this.argsForMethodToMock = null;
+        }
+
+        @TestVisible
+        protected void thenExecute(ZD_Application.StubInvocable invocable){
+            if(this.methodToMock == null){
+                throw new ApplicationException('cannot mock a null method');
+            }
+            this.setReturnValue(this.methodToMock, this.argsForMethodToMock, invocable);
+            this.methodToMock = null;
+            this.argsForMethodToMock = null;
+        }
+
+        @TestVisible
+        protected void thenThrowException(Exception e){
+            if(this.methodToMock == null){
+                throw new ApplicationException('cannot mock a null method');
+            }
+            this.setReturnValue(this.methodToMock, this.argsForMethodToMock, e);
+            this.methodToMock = null;
+            this.argsForMethodToMock = null;
+        }
+
         /**
          * @description sets a return value at a particular method for mocking
          * @param methodName - method to mock
