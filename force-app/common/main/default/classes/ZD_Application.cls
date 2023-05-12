@@ -57,6 +57,11 @@ public inherited sharing class ZD_Application {
         @TestVisible private String methodToMock;
         @TestVisible private Map<String,Object> argsForMethodToMock;
 
+        /**
+         * @description sets the method to mock
+         * @param methodToMock - method to mock
+         * @return itself (this)
+         */
         @TestVisible
         protected Mockable when(String methodToMock){
             if(isSettingMockValues != true){
@@ -67,6 +72,11 @@ public inherited sharing class ZD_Application {
             return this;
         }
 
+        /**
+         * @description sets arguments for a mocked method
+         * @param argsForMethodToMock - arguments in mocked method call
+         * @return itself (this)
+         */
         @TestVisible
         protected Mockable with(Map<String,Object> argsForMethodToMock){
             if(isSettingMockValues != true){
@@ -79,6 +89,10 @@ public inherited sharing class ZD_Application {
             return this;
         }
 
+        /**
+         * @description returns a value for a particular method
+         * @param returnValue - return value for a method
+         */
         @TestVisible
         protected void thenReturn(Object returnValue){
             if(this.methodToMock == null){
@@ -89,6 +103,10 @@ public inherited sharing class ZD_Application {
             this.argsForMethodToMock = null;
         }
 
+        /**
+         * @description executes code via stubinvocable when a method is called
+         * @param invocable - invocable to execute
+         */
         @TestVisible
         protected void thenExecute(ZD_Application.StubInvocable invocable){
             if(this.methodToMock == null){
@@ -99,6 +117,10 @@ public inherited sharing class ZD_Application {
             this.argsForMethodToMock = null;
         }
 
+        /**
+         * @description throws an exception for a given method
+         * @param e - Exception to throw
+         */
         @TestVisible
         protected void thenThrowException(Exception e){
             if(this.methodToMock == null){
