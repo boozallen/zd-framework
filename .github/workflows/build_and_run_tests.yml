@@ -22,6 +22,7 @@ jobs:
     - name: Install SFDX Plugins
       run: |
         npm install sfdx-cli --global
+        npm install @salesforce/cli --global
         sfdx --version
         sfdx plugins --core
         sfdx plugins:install @salesforce/sfdx-scanner
