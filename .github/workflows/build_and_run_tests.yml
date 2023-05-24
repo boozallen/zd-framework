@@ -42,7 +42,7 @@ jobs:
           max_attempts: 3
           retry_on: error
           timeout_minutes: 5
-          command: sf org create scratch -v DEVHUB --duration-days 1 -s -f config/project-scratch-def.json
+          command: sf org create scratch -v DEVHUB --duration-days 1 -d -f config/project-scratch-def.json
         
     - name: Deploy
       id: Deploy
