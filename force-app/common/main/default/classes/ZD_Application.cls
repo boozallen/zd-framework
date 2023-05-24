@@ -7,8 +7,8 @@
  */
 public inherited sharing class ZD_Application {
     
-    private static boolean isSettingMockValues;
-    @TestVisible private static boolean isRunningTest = Test.isRunningTest();
+    private static Boolean isSettingMockValues;
+    @TestVisible private static Boolean isRunningTest = Test.isRunningTest();
 
     /**
      * @description util instance for accessing the utility methods
@@ -52,7 +52,7 @@ public inherited sharing class ZD_Application {
         protected Map<String,Object> returnValues = new Map<String,Object>();
         @TestVisible protected Map<String, Integer> invokedMethodsMap = new Map<String, Integer>();
         
-        protected boolean isMocked = false;
+        protected Boolean isMocked = false;
 
         @TestVisible private String methodToMock;
         @TestVisible private Map<String,Object> argsForMethodToMock;
@@ -213,6 +213,134 @@ public inherited sharing class ZD_Application {
                 return methodName;
             }
             return methodName + ';' + String.valueOf(args);
+        }
+
+        /**
+         * @description converts a method - argument map combo into a string
+         * @param instance - object to get the class name of
+         * @return - String value of the class name of the instance
+         */
+        public String getClassName(Object instance){
+            return String.valueOf(instance)?.split(':')[0];
+        }
+    }
+
+    /**
+     * @description security validation to force custom permissions 
+     * to run apex classes
+     */
+    public without sharing class SecurityValidator{
+        
+        /**
+         * @description ZD_Configuration instance
+         */
+        @TestVisible private ZD_Configuration securityConfig;
+
+        /**
+         * @description is security enabled for this validator at all
+         */
+        @TestVisible private Boolean securityEnabled;
+
+        /**
+         * @description requires explicit permission. this means that a custom
+         * metadata record for every method must exist. defaults to "cant run" if true.
+         */
+        @TestVisible private Boolean requireExplicitPermission;
+        
+        /**
+         * @description overall bypass permission to skip all the security checks
+         */
+        @TestVisible private String bypassPermission;
+
+        /**
+         * @description overall class permission required to run
+         */
+        @TestVisible private String classPermission;
+
+        /**
+         * @description default constructor. initializes config instance,
+         * sets securityEnabled and requiresExplicitPermission to false
+         */
+        public SecurityValidator(){
+            securityConfig = new ZD_Configuration();
+            securityEnabled = false;
+            requireExplicitPermission = false;
+        }
+
+        /**
+         * @description builder method to enable security
+         * @param instance - object to enable security on
+         * @return - itself
+         */
+        public SecurityValidator enableSecurity(Object instance){
+            String className = ZD_Application.util.getClassName(instance);
+            securityConfig.loadConfig(className);
+            this.securityEnabled = true;
+            return this;
+        }
+
+        /**
+         * @description builder method to set bypassPermission
+         * @param bypassPermission - object to set bypassPermission to
+         * @return - itself
+         */
+        public SecurityValidator withBypassPermission(String bypassPermission){
+            this.bypassPermission = bypassPermission;
+            return this;
+        }
+
+        /**
+         * @description builder method to set classPermission
+         * @param classPermission - object to set classPermission to
+         * @return - itself
+         */
+        public SecurityValidator withClassPermission(String classPermission){
+            this.classPermission = classPermission;
+            return this;
+        }
+
+        /**
+         * @description builder method to enableExplicitPermission
+         * @return - itself
+         */
+        public SecurityValidator withExplicitPermissionRequired(){
+            requireExplicitPermission = true;
+            return this;
+        }
+
+        /**
+         * @description returns boolean if security is enabled
+         * @return - boolean representing if security is enabled or not
+         */
+        public Boolean isSecurityEnabled(){
+            return securityEnabled;
+        }
+
+        /**
+         * @description returns boolean if requireExplicitPermission is true or not
+         * @return - boolean representing if requireExplicitPermission is true or not
+         */
+        public Boolean requiresExplicitPermission(){
+            return requireExplicitPermission;
+        }
+
+        /**
+         * @description returns boolean user requireExplicitPermission is true or not
+         * @param o - object to check if we can run the method on
+         * @param action - method to check if user can run
+         * @return - boolean representing if user can run the method or not
+         */
+        public Boolean canRunMethod(Object o, String action){
+            if(!securityEnabled || FeatureManagement.checkPermission(bypassPermission)){
+                return true;
+            }
+            if(!String.isBlank(classPermission) && !FeatureManagement.checkPermission(classPermission)){
+                return false;
+            }
+            String className = ZD_Application.util.getClassName(o);
+            String methodPermission = securityConfig.get(className, action);
+            return ((!this.requiresExplicitPermission() && String.isBlank(methodPermission))
+                    || FeatureManagement.checkPermission(methodPermission));
         }
     }
 
