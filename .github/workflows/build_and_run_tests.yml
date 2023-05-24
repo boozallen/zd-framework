@@ -1,0 +1,65 @@
+name: Run Apex Unit Tests
+run-name: ${{ github.actor }} has opened PR for branch ${{github.head_ref}} 🚀
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+
+  build_and_run_tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.ref }}
+        fetch-depth: 0
+      if: github.event.action == 'opened' || github.event.action == 'synchronize' || github.event_name == 'push'
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '>=14'
+        check-latest: true
+   
+    - name: Install SFDX Plugins
+      run: |
+        npm install sfdx-cli --global
+        npm install @salesforce/cli --global
+        sfdx --version
+        sfdx plugins --core
+        sfdx plugins:install @salesforce/sfdx-scanner
+        echo "y"
+
+    - name: 'Populate auth file with SFDX_URL DevHub secret'
+      shell: bash
+      run: 'echo ${{ secrets.SFDX_CICD_URL_DEVHUB}} > DEVHUB_URL'
+
+    - name: 'Authenticate against DEVHUB'
+      run: sfdx force:auth:sfdxurl:store -f DEVHUB_URL -s -a DEVHUB
+        
+    - name: 'Create Scratch Org'
+      id: CreateOrg
+      uses: nick-fields/retry@v2
+      with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 5
+          command: sf org create scratch -v DEVHUB --duration-days 1 -d -f config/project-scratch-def.json
+        
+    - name: Deploy
+      id: Deploy
+      run:
+        sf project start deploy -d force-app
+
+    - name: 'Run Apex Tests'
+      id: Test
+      shell: pwsh
+      run: sf run apex test --test-level "RunLocalTests" --result-format human --code-coverage -w 2
+
+    - name: 'Delete Scratch Org'
+      id: CleanUp
+      run:
+        sf org delete scratch -p
+    
+    - name: 'Scan Code'
+      id: Scan
+      run:
+        sfdx scanner:run --target "force-app" --engine "pmd" --normalize-severity -s 3

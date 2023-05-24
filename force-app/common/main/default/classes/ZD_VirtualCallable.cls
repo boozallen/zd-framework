@@ -7,7 +7,8 @@
  */
 public inherited sharing virtual class ZD_VirtualCallable extends ZD_Application.Mockable implements System.Callable{
     
-    @TestVisible protected boolean isSpyingEnabled = Test.isRunningTest();
+    @TestVisible protected Boolean isSpyingEnabled = Test.isRunningTest();
+    @TestVisible protected ZD_Application.SecurityValidator securityValidator = new ZD_Application.SecurityValidator();
 
     /**
      * @description method to override and do logic in
@@ -35,6 +36,9 @@ public inherited sharing virtual class ZD_VirtualCallable extends ZD_Application
      */
     public Object call(String action, Map<String,Object> args){
         action = action.toLowerCase();
+        if(!this.securityValidator.canRunMethod(this, action)){
+            throw new ZD_Application.ApplicationException('This method cannot be ran by this user.');
+        }
         if(this.isSpyingEnabled){
             if(!this.invokedMethodsMap.containsKey(action)){
                 this.invokedMethodsMap.put(action, 0);
@@ -53,7 +57,7 @@ public inherited sharing virtual class ZD_VirtualCallable extends ZD_Application
     }
     
     @TestVisible
-    private boolean containsReturnValue(String action, Map<String,Object> args){
+    private Boolean containsReturnValue(String action, Map<String,Object> args){
         return returnValues.containsKey(action) || returnValues.containsKey(ZD_Application.util.serializeMethodCall(action,args));
     }
     
