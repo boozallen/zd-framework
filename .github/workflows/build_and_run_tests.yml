@@ -25,7 +25,7 @@ jobs:
         sfdx --version
         sfdx plugins --core
         sfdx plugins:install @salesforce/sfdx-scanner
-        echo "y" | sfdx plugins:install texei-sfdx-plugin
+        echo "y"
 
     - name: 'Populate auth file with SFDX_URL DevHub secret'
       shell: bash
@@ -41,26 +41,22 @@ jobs:
           max_attempts: 3
           retry_on: error
           timeout_minutes: 5
-          command: sfdx force:org:create -v DEVHUB --durationdays 1 -s -f config/project-scratch-def.json
-    
-    - name: INSTALL PACKAGE DEPENDENCIES TO SCRATCH ORG
-      shell: pwsh
-      run: cicd/texei/install-package-dependencies.ps1
+          command: sf org create scratch -v DEVHUB --duration-days 1 -s -f config/project-scratch-def.json
         
     - name: Deploy
       id: Deploy
       run:
-        sfdx force:source:deploy -p vcl
+        sf project start deploy -d force-app
 
     - name: 'Run Apex Tests'
       id: Test
       shell: pwsh
-      run: cicd/unit_tests/run_unit_tests_feature.ps1
+      run: sf run apex test --test-level "RunLocalTests" --result-format human --code-coverage -w 2
 
     - name: 'Delete Scratch Org'
       id: CleanUp
       run:
-        sfdx org:delete:scratch -p
+        sf org delete scratch -p
     
     - name: 'Scan Code'
       id: Scan
