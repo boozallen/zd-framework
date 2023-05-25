@@ -149,6 +149,19 @@ public with sharing class ZD_VirtualCallableTest {
         }
     }
 
+    @isTest
+    public static void testSecuredCallable(){
+        ZD_VirtualCallable tvc = new TestSecuredCallable();
+        tvc.securityValidator.securityConfig.cache.addToCache(new ZD_Configuration.Setting('TestSecuredCallable', 'action1', 'zd_test_permission'));
+        try{
+            tvc.call('action1');
+            Assert.fail('Should not be able to call this method');
+        }catch(Exception e){
+            Assert.isTrue(e.getMessage().contains('This method cannot be ran by this user.'), 
+             'Error message should contain "This method cannot be ran by this user."');
+        }
+    }
+
     private class TestVirtualCallable extends ZD_VirtualCallable{
         public override Object doCall(String action, Map<String,Object> args){
             switch on action {
@@ -167,6 +180,30 @@ public with sharing class ZD_VirtualCallableTest {
     private class TestInvocable extends ZD_Application.StubInvocable{
         public override void handleMethodCall(String action, Map<String,Object> args){
             testOutput = 'Called ' + action + ' from TestInvocable';
+        }
+    }
+
+    private class TestSecuredCallable extends ZD_VirtualCallable{
+        
+        /**
+         * @description secure and requires explicit permission
+         */
+        public TestSecuredCallable(){
+            this.securityValidator.enableSecurity(this)
+                                    .withExplicitPermissionRequired();
+        }
+
+        public override Object doCall(String action, Map<String,Object> args){
+            switch on action {
+                when 'action1' {
+                    testOutput = 'Called action1 from TestVirtualCallable';
+                }when 'action2' {
+                    testOutput = 'Called action2 from TestVirtualCallable';
+                }when 'action3'{
+                    return 'action 3 called';
+                }
+            }
+            return null;
         }
     }
 

@@ -6,6 +6,7 @@
  * @author Jonathan Devlin
  */
 @isTest
+@SuppressWarnings('PMD.ExcessivePublicCount ')
 public without sharing class ZD_ApplicationTest {
     
     static Integer invocableCallCount = 0;
@@ -213,6 +214,51 @@ public without sharing class ZD_ApplicationTest {
         }
     }
 
+    @isTest
+    public static void testGetClassName(){
+        Assert.areEqual('TestMockable', ZD_Application.util.getClassName(new TestMockable()), 'class name should be TestMockable');
+        ZD_Application.StubInvocable t = new TestInvocable();
+        Assert.areEqual('TestInvocable', ZD_Application.util.getClassName(t), 'class name should be TestInvocable');
+        Assert.areEqual('StubInvocable', ZD_Application.util.getClassName(new ZD_Application.StubInvocable()), 'class name should be TestInvocable');
+    }
+
+    @isTest
+    public static void testSecurityValidatorMethodWithoutPermissionAssigned(){
+        TestMockable t = new TestMockable();
+        ZD_Application.SecurityValidator sv = new ZD_Application.SecurityValidator();
+        sv.enableSecurity(t);
+        Assert.isTrue(sv.isSecurityEnabled(), 'security should be enabled');
+        sv.securityConfig.cache.addToCache(new ZD_Configuration.Setting('TestMockable', 'getReturnValues', 'zd_test_permission'));
+        Assert.isFalse(sv.canRunMethod(t, 'getReturnValues'), 'should not be able to run getReturnValues');
+        Assert.isTrue(sv.canRunMethod(t, 'sampleMethod'), 'should be able to run sampleMethod');
+    }
+
+    @isTest
+    public static void testSecurityValidatorMethodWithoutPermissionAssignedExplicitPermission(){
+        TestMockable t = new TestMockable();
+        ZD_Application.SecurityValidator sv = new ZD_Application.SecurityValidator();
+        sv.enableSecurity(t).withExplicitPermissionRequired();
+        Assert.isTrue(sv.isSecurityEnabled(), 'security should be enabled');
+        sv.securityConfig.cache.addToCache(new ZD_Configuration.Setting('TestMockable', 'getReturnValues', 'zd_test_permission'));
+        Assert.isFalse(sv.canRunMethod(t, 'getReturnValues'), 'should not be able to run getReturnValues');
+        Assert.isFalse(sv.canRunMethod(t, 'sampleMethod'), 'should not be able to run sampleMethod');
+    }
+
+    @isTest
+    public static void testOverallAndBypassPermissions(){
+        TestMockable t = new TestMockable();
+        ZD_Application.SecurityValidator sv = new ZD_Application.SecurityValidator();
+        sv.enableSecurity(t)
+            .withClassPermission('zd_test_class_permission')
+            .withBypassPermission('zd_test_bypass_permission');
+        Assert.areEqual('zd_test_class_permission', sv.classPermission, 'class permission should be zd_test_class_permission');
+        Assert.areEqual('zd_test_bypass_permission', sv.bypassPermission, 'bypass permission should be zd_test_bypass_permission');
+        Assert.isTrue(sv.isSecurityEnabled(), 'security should be enabled');
+        sv.securityConfig.cache.addToCache(new ZD_Configuration.Setting('TestMockable', 'getReturnValues', 'test_permission'));
+        Assert.isFalse(sv.canRunMethod(t, 'getReturnValues'), 'should not be able to run getReturnValues');
+        Assert.isFalse(sv.canRunMethod(t, 'sampleMethod'), 'should be able to run sampleMethod');
+    }
+
     class TestInvocable extends ZD_Application.StubInvocable{
         
         public override void handleMethodCall(String action, Map<String,Object> args){
@@ -224,6 +270,10 @@ public without sharing class ZD_ApplicationTest {
         @TestVisible 
         private Map<String,Object> getReturnValues(){
             return this.returnValues;
+        }
+
+        private void sampleMethod(){
+            return;
         }
     }
 

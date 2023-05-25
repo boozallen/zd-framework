@@ -121,7 +121,7 @@ public without sharing class ZD_Configuration {
             if(valueCache.get(setting.application) == null){
                 valueCache.put(setting.application, new Map<String,String>());
             }
-            valueCache.get(setting.application).put(setting.key, setting.value);
+            valueCache.get(setting.application).put(setting.key.toLowerCase(), setting.value);
         }
 
         /**
@@ -134,7 +134,7 @@ public without sharing class ZD_Configuration {
             if(valueCache.get(app) == null){
                 throw new ZD_ConfigurationException('Application: ' + app + ' config has not been loaded');
             }
-            return valueCache.get(app).get(key);
+            return valueCache.get(app).get(key.toLowerCase());
         }
 
         /**
@@ -183,9 +183,9 @@ public without sharing class ZD_Configuration {
          */
         @TestVisible 
         private Setting(String application, String key, String value){
-            this.key = key;
-            this.value = value;
-            this.application = application;
+            this.key = key != null ? key : '';
+            this.value = value != null ? value : '';
+            this.application = application != null ? application : '';
         }
     }
 }
