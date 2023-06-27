@@ -9,10 +9,15 @@ public inherited sharing virtual class ZD_DatabaseService extends ZD_VirtualCall
 
     @TestVisible private System.AccessLevel accessLevel = System.AccessLevel.USER_MODE;
 
+    /**
+     * @description dbservice instance for the static utility methods. extend this class
+     * and update the metadata to point to the extension if you want to use it in your org
+     */
     @TestVisible private static Callable dbService{
         get{
             if(dbService == null){
-                dbService = ZD_CallableFactory.getFactory().getCallableInstance('ZD_DatabaseService');
+                String dbServiceImplClassName = ZD_Application.config.get('dbServiceImplClassName');
+                dbService = ZD_CallableFactory.getFactory().getCallableInstance(dbServiceImplClassName);
             }
             return dbService;
         }
@@ -162,7 +167,7 @@ public inherited sharing virtual class ZD_DatabaseService extends ZD_VirtualCall
                 System.AccessLevel accessLevel = args.get('accessLevel') != null
                                                 ? (System.AccessLevel) args.get('accessLevel')
                                                 : this.accessLevel;
-                List<SObject> sObjList = Database.query(query, accessLevel);
+                List<SObject> sObjList = this.executeQuery(query, accessLevel);
                 return sObjList;
             }
             when 'queryaszdrecords'{
@@ -201,5 +206,16 @@ public inherited sharing virtual class ZD_DatabaseService extends ZD_VirtualCall
             args.put('accessLevel', System.AccessLevel.USER_MODE);
         }
         super.setReturnValue(methodName, args, returnValue);
+    }
+
+    /**
+     * @description virtual utility method to run the query. Can be overridden to do extra validation if needed
+     * @param query - query to run
+     * @param accessLevel - access level to run query in
+     * @return a list of sobjects from the query
+     */
+    @TestVisible
+    private virtual List<SObject> executeQuery(String query, System.AccessLevel accessLevel){
+        return Database.query(query, accessLevel);
     }
 }

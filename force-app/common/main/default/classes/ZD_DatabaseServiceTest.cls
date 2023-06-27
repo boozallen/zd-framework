@@ -269,4 +269,26 @@ public without sharing class ZD_DatabaseServiceTest {
         Assert.areEqual(1, zdRecordListQuery2.size(), 'Should be 1 group');
         Assert.areEqual(zdRecordListQuery2[0].get('Name'), 'ZD_DatabaseService Group2', 'Should be ZD_DatabaseService Group2');
     }
+
+    @isTest
+    public static void testExtendDBService(){
+        String gName = 'ZD_DatabaseService Group';
+        List<Group> gList = [SELECT Id FROM Group WHERE Name='ZD_DatabaseService Group'];
+        Assert.areEqual(0, gList.size(), 'should be no groups');
+        Group g = new Group(Name='ZD_DatabaseService Group');
+        insert g;
+        gList = ZD_DatabaseService.query('SELECT Id FROM Group WHERE Name=\'ZD_DatabaseService Group\'');
+        Assert.areEqual(1, gList.size(), 'should be 1 groups');
+        //reset the getter
+        ZD_DatabaseService.dbService = null;
+        ZD_Application.config.cache.addToCache(new ZD_Configuration.Setting('ZD_Framework_Configuration', 'dbServiceImplClassName', 'ZD_DatabaseServiceTest.TestDBServiceImpl'));
+        gList = ZD_DatabaseService.query('SELECT Id FROM Group WHERE Name=\'ZD_DatabaseService Group\'');
+        Assert.areEqual(0, gList.size(), 'Should be 0 groups');
+    }
+
+    public class TestDBServiceImpl extends ZD_DatabaseService{
+        public override List<SObject> executeQuery(String query, System.AccessLevel accessLevel){
+            return new List<SObject>();
+        }
+    }
 }

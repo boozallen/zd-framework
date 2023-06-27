@@ -43,9 +43,11 @@ public without sharing class ZD_Configuration {
      * @param appName - app name to lod the config for
      */
     public void loadConfig(String appName){
-        List<ZD_Configuration.Setting> settings = getApplicationConfiguration(ZD_DatabaseService.queryWithBinds('SELECT Key__c, Value__c, Application__r.DeveloperName FROM ZD_ApplicationConfiguration__mdt WHERE Application__r.DeveloperName =: appName', 
-                                                                                new Map<String,Object>{'appName' => appName}, 
-                                                                                System.accessLevel.SYSTEM_MODE));
+        Callable dbService = ZD_CallableFactory.getFactory().getCallableInstance('ZD_DatabaseService');
+        List<SObject> configRecords = (List<SObject>) dbService.call('queryWithBinds', new Map<String,Object>{'query' => 'SELECT Key__c, Value__c, Application__r.DeveloperName FROM ZD_ApplicationConfiguration__mdt WHERE Application__r.DeveloperName =: appName',
+                                                                'bindMap' => new Map<String,Object>{'appName' => appName},
+                                                                'accessLevel' => System.accessLevel.SYSTEM_MODE});
+        List<ZD_Configuration.Setting> settings = getApplicationConfiguration(configRecords);
         for(ZD_Configuration.Setting setting : settings){
             cache.addToCache(setting);
         }

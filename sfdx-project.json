@@ -8,7 +8,7 @@
       "path": "force-app/common",
       "package": "ZD Framework",
       "versionName": "ver 1.0",
-      "versionNumber": "1.0.2.NEXT",
+      "versionNumber": "1.0.3.NEXT",
       "default": false,
       "versionDescription": "Initial release of the Zero Depdenencies Framework (ZDF)"
     }
@@ -20,6 +20,8 @@
     "ZD Framework": "0Ho2E000000PAyGSAW",
     "ZD Framework@1.0.1-1": "04tHu000002hCgEIAU",
     "ZD Framework@1.0.1-2": "04tHu000002hDtqIAE",
-    "ZD Framework@1.0.2-1": "04tHu000002hDtvIAE"
+    "ZD Framework@1.0.2-1": "04tHu000002hDtvIAE",
+    "ZD Framework@1.0.2-2": "04tHu000003klbnIAA",
+    "ZD Framework@1.0.3-1": "04tHu000003klbsIAA"
   }
 }

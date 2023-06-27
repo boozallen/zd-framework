@@ -11,6 +11,11 @@ public inherited sharing class ZD_Application {
     @TestVisible private static Boolean isRunningTest = Test.isRunningTest();
 
     /**
+     * @description ZD framework configuration
+     */
+    public static ZD_Configuration config = new ZD_Configuration('ZD_Framework_Configuration');
+
+    /**
      * @description util instance for accessing the utility methods
      */
     public static Utils util{
