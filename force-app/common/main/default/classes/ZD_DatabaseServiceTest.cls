@@ -272,7 +272,6 @@ public without sharing class ZD_DatabaseServiceTest {
 
     @isTest
     public static void testExtendDBService(){
-        String gName = 'ZD_DatabaseService Group';
         List<Group> gList = [SELECT Id FROM Group WHERE Name='ZD_DatabaseService Group'];
         Assert.areEqual(0, gList.size(), 'should be no groups');
         Group g = new Group(Name='ZD_DatabaseService Group');
@@ -286,6 +285,9 @@ public without sharing class ZD_DatabaseServiceTest {
         Assert.areEqual(0, gList.size(), 'Should be 0 groups');
     }
 
+    /**
+     * @description extended db service to handle extra logic for query validation
+     */
     public class TestDBServiceImpl extends ZD_DatabaseService{
         public override List<SObject> executeQuery(String query, System.AccessLevel accessLevel){
             return new List<SObject>();

@@ -16,7 +16,9 @@ public inherited sharing virtual class ZD_DatabaseService extends ZD_VirtualCall
     @TestVisible private static Callable dbService{
         get{
             if(dbService == null){
-                String dbServiceImplClassName = ZD_Application.config.get('dbServiceImplClassName');
+                String dbServiceImplClassName = String.isBlank(ZD_Application.config.get('dbServiceImplClassName'))
+                                                    ? 'ZD_DatabaseService'
+                                                    : ZD_Application.config.get('dbServiceImplClassName');
                 dbService = ZD_CallableFactory.getFactory().getCallableInstance(dbServiceImplClassName);
             }
             return dbService;

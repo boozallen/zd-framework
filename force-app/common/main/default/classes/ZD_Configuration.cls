@@ -48,6 +48,7 @@ public without sharing class ZD_Configuration {
                                                                 'bindMap' => new Map<String,Object>{'appName' => appName},
                                                                 'accessLevel' => System.accessLevel.SYSTEM_MODE});
         List<ZD_Configuration.Setting> settings = getApplicationConfiguration(configRecords);
+        cache.addApp(appName);
         for(ZD_Configuration.Setting setting : settings){
             cache.addToCache(setting);
         }
@@ -112,17 +113,24 @@ public without sharing class ZD_Configuration {
      * @description class to hold settings so that queries dont have to be run
      * multiple times
      */
-    public class Cache{
+    private class Cache{
         private Map<String,Map<String,String>> valueCache = new Map<String,Map<String,String>>();
+
+        /**
+         * @description adds an app to the cache
+         * @param appName - app to initialize
+         */
+        public void addApp(String appName){
+            if(valueCache.get(appName) == null){
+                valueCache.put(appName, new Map<String,String>());
+            }
+        }
 
         /**
          * @description adds a setting to the cache for fast retrieval later
          * @param setting - setting to cache
          */
         public void addToCache(ZD_Configuration.Setting setting){
-            if(valueCache.get(setting.application) == null){
-                valueCache.put(setting.application, new Map<String,String>());
-            }
             valueCache.get(setting.application).put(setting.key.toLowerCase(), setting.value);
         }
 
