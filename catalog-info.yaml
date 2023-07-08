@@ -24,5 +24,5 @@ metadata:
 spec:
   type: library
   lifecycle: production
-  owner: jdevlin-bah
+  owner: boozallen/zdf-maintainers
   visibility: public
