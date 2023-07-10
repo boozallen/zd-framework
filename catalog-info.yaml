@@ -12,7 +12,7 @@ metadata:
   # description of entity, will be displayed in the portal
   description: A framework that enables dependency decoupling on the Salesforce platform to enable scratch org development in large, enterprise orgs.
   annotations:
-    github.com/project-slug: https://github.com/boozallen/zd-framework
+    github.com/project-slug: boozallen/zd-framework
   tags:
     - salesforce
     - sfdx
