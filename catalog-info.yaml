@@ -11,17 +11,18 @@ metadata:
   title: Zero Depedencies Framework for Salesforce Application Development
   # description of entity, will be displayed in the portal
   description: A framework that enables dependency decoupling on the Salesforce platform to enable scratch org development in large, enterprise orgs.
-
-metadata:
-  ...
+  annotations:
+    github.com/project-slug: boozallen/zd-framework
   tags:
-    # baseline
-    - software-studio
-    # keywords for the repo
     - salesforce
     - sfdx
-
-  spec:
+    - apex
+    - unit-test-framework
+  links:
+    - url: https://github.com/boozallen/zd-framework/blob/main/README.md
+      title: Documentation
+spec:
   type: library
   lifecycle: production
-  owner: user:Jonathan-Devlin
+  owner: boozallen/zdf-maintainers
+  visibility: public
