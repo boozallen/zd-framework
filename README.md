@@ -1,7 +1,7 @@
 # Zero Dependency Framework (ZDF)
 
-[Production/Developer Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHu000003kloVIAQ)<br />
-[Sandbox Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHu000003kloVIAQ)<br />
+[Production/Developer Install](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tHu000003hv5wIAA)<br />
+[Sandbox Install](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tHu000003hv5wIAA)<br />
 
 ## About
 The Zero Dependencies Framework (ZDF) enables scratch org development in any environment because it reduces the required dependent metadata to deploy code into a scratch org down to zero. This framework solves the most prevalent problem in the Salesforce ecosystem: decoupling dependencies in environments that have many development teams/firms. This allows individuals to carve off small pieces of functionality to deploy to a scratch org without requiring other teams/projects to also adopt it.
