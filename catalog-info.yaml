@@ -25,4 +25,4 @@ spec:
   type: library
   lifecycle: production
   owner: boozallen/zdf-maintainers
-  visibility: public
+  system: system:default/salesforce-platform-system
